@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In & Sign Up</title>
+    
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        /* This will apply to the body of the host page */
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* New classic background color */
+            background-color: #fdfbfb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const styles = `
+            .form-wrapper {
+                background-color: #ffffff;
+                border-radius: 15px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+                width: 100%;
+                max-width: 420px;
+                padding: 3rem;
+                box-sizing: border-box;
+            }
+
+            .form-content {
+                opacity: 1;
+                transition: opacity 0.4s ease-in-out;
+            }
+            
+            .form-content.fade-out {
+                opacity: 0;
+            }
+
+            .form {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            h1 {
+                font-weight: 700;
+                margin: 0 0 0.5rem 0;
+                color: #2c3e50;
+                font-size: 2rem;
+            }
+            
+            p.subtitle {
+                color: #7d7d7d;
+                margin-bottom: 2rem;
+                font-size: 0.9rem;
+            }
+
+            .input-group {
+                margin-bottom: 1rem;
+                text-align: left;
+            }
+            
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #5c5c5c;
+                font-size: 0.9rem;
+            }
+
+            input {
+                background-color: #f7f7f7;
+                border: 2px solid transparent;
+                padding: 12px 15px;
+                width: 100%;
+                border-radius: 8px;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            input:focus {
+                outline: none;
+                /* New classic focus color */
+                border-color: #34568B;
+                box-shadow: 0 0 0 3px rgba(52, 86, 139, 0.15);
+            }
+            
+            button {
+                border-radius: 8px;
+                border: none;
+                /* New classic button color */
+                background-color: #34568B;
+                color: #FFFFFF;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 14px 45px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                transition: all 0.2s ease-in-out;
+                cursor: pointer;
+                margin-top: 1.5rem;
+            }
+
+            button:hover {
+                background-color: #2e4a75;
+                transform: translateY(-2px);
+            }
+            
+            button:active {
+                transform: translateY(0);
+                box-shadow: none;
+            }
+
+            .toggle-text {
+                margin-top: 2rem;
+                font-size: 0.9rem;
+                color: #555;
+            }
+            
+            .toggle-link {
+                /* New classic link color */
+                color: #34568B;
+                font-weight: 600;
+                cursor: pointer;
+                text-decoration: none;
+            }
+            
+            .toggle-link:hover {
+                text-decoration: underline;
+            }
+        `;
+        
+        // Form Component for reusability
+        const FormComponent = ({ isSignUp, onToggle }) => {
+            if (isSignUp) {
+                return (
+                     <form className="form">
+                        <h1>Create Account</h1>
+                        <p className="subtitle">Get started with a free account</p>
+                        <div className="input-group">
+                            <label htmlFor="name">Full Name</label>
+                            <input id="name" type="text" placeholder="John Doe" />
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="email">Email</label>
+                            <input id="email" type="email" placeholder="you@example.com" />
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="password">Password</label>
+                            <input id="password" type="password" placeholder="Create a strong password" />
+                        </div>
+                        <button type="submit">Sign Up</button>
+                        <p className="toggle-text">
+                            Already have an account?{' '}
+                            <a onClick={onToggle} className="toggle-link">Sign In</a>
+                        </p>
+                    </form>
+                );
+            }
+            
+            return (
+                <form className="form">
+                    <h1>satwik photography</h1>
+                    <p className="subtitle">Sign in to continue</p>
+                    <div className="input-group">
+                        <label htmlFor="email">Email</label>
+                        <input id="email" type="email" placeholder="you@example.com" />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="password">Password</label>
+                        <input id="password" type="password" placeholder="Enter your password" />
+                    </div>
+                    <button type="submit">Sign In</button>
+                    <p className="toggle-text">
+                        No account yet?{' '}
+                        <a onClick={onToggle} className="toggle-link">Sign Up</a>
+                    </p>
+                </form>
+            );
+        }
+
+        function App() {
+            const [isSignUp, setIsSignUp] = useState(false);
+            const [isFading, setIsFading] = useState(false);
+
+            const handleToggle = () => {
+                setIsFading(true);
+                // Wait for fade-out animation to finish before switching the form
+                setTimeout(() => {
+                    setIsSignUp(prev => !prev);
+                    setIsFading(false);
+                }, 400);
+            };
+
+            return (
+                <React.Fragment>
+                    <style>{styles}</style>
+                    <div className="form-wrapper">
+                       <div className={`form-content ${isFading ? 'fade-out' : ''}`}>
+                          <FormComponent isSignUp={isSignUp} onToggle={handleToggle} />
+                       </div>
+                    </div>
+                </React.Fragment>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
